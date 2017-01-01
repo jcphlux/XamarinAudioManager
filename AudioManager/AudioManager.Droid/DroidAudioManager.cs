@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Android.Media;
 using AudioManager.Droid;
@@ -12,10 +15,15 @@ namespace AudioManager.Droid
     {
         #region Private Variables
 
+        private readonly List<MediaPlayer> _soundEffects = new List<MediaPlayer>();
+
         private MediaPlayer _backgroundMusic;
-        private MediaPlayer _soundEffect;
         private string _backgroundSong = "";
-        private float _backgroundMusicVolume;
+
+        private bool _musicOn = true;
+        private bool _effectsOn = true;
+        private float _backgroundMusicVolume = 0.5f;
+        private float _effectsVolume = 1.0f;
 
         #endregion
 
@@ -29,16 +37,50 @@ namespace AudioManager.Droid
             }
             set
             {
-                _backgroundMusic.SetVolume(value, value);
                 _backgroundMusicVolume = value;
+
+                if (_backgroundMusic != null)
+                    _backgroundMusic.SetVolume(_backgroundMusicVolume, _backgroundMusicVolume); 
+            }
+        }
+        
+        public bool MusicOn
+        {
+            get { return _musicOn; }
+            set
+            {
+                _musicOn = value;
+
+                if (!MusicOn)
+                    SuspendBackgroundMusic();
+                else
+                    RestartBackgroundMusic();
+
+            }
+        }
+        public bool EffectsOn
+        {
+            get { return _effectsOn; }
+            set
+            {
+                _effectsOn = value;
+
+                if (!EffectsOn && _soundEffects.Any())
+                    foreach (var s in _soundEffects) s.Stop();
             }
         }
 
-        public bool MusicOn { get; set; } = true;
-        public float MusicVolume { get; set; } = 0.5f;
+        public float EffectsVolume
+        {
+            get { return _effectsVolume; }
+            set
+            {
+                _effectsVolume = value;
 
-        public bool EffectsOn { get; set; } = true;
-        public float EffectsVolume { get; set; } = 1.0f;
+                if (_soundEffects.Any())
+                    foreach (var s in _soundEffects) s.SetVolume(_effectsVolume, _effectsVolume);
+            }
+        }
 
         public string SoundPath { get; set; } = "Sounds";
         #endregion
@@ -52,6 +94,8 @@ namespace AudioManager.Droid
         }
 
         #endregion
+
+        #region Public Methods
 
         public void ActivateAudioSession()
         {
@@ -68,10 +112,10 @@ namespace AudioManager.Droid
             //todo
         }
 
-        public void PlayBackgroundMusic(string filename)
+        public async Task<bool> PlayBackgroundMusic(string filename)
         {
             // Music enabled?
-            if (!MusicOn) return;
+            if (!MusicOn) return false;
 
             // Any existing background music?
             if (_backgroundMusic != null)
@@ -81,18 +125,12 @@ namespace AudioManager.Droid
                 _backgroundMusic.Dispose();
             }
 
-            // Initialize background music
-            // Open the resource
-            var fd = Forms.Context.Assets.OpenFd($"{SoundPath}/{filename}");
-
-            _backgroundMusic = new MediaPlayer();
-            BackgroundMusicVolume = MusicVolume;
-            _backgroundMusic.Looping = true;
-
-            _backgroundMusic.SetDataSource(fd.FileDescriptor);
-            _backgroundMusic.Prepare();
-            _backgroundMusic.Start();
             _backgroundSong = filename;
+
+            // Initialize background music
+            _backgroundMusic = await NewSound(filename, BackgroundMusicVolume, true);
+
+            return true;
         }
 
         public void StopBackgroundMusic()
@@ -116,46 +154,56 @@ namespace AudioManager.Droid
             }
         }
 
-        public Task RestartBackgroundMusic()
+        public async Task<bool> RestartBackgroundMusic()
         {
             // Music enabled?
-            if (!MusicOn) return;
+            if (!MusicOn) return false; 
 
             // Was a song previously playing?
-            if (_backgroundSong == "") return;
+            if (_backgroundSong == "") return false;
 
             // Restart song to fix issue with wonky music after sleep
-            PlayBackgroundMusic(_backgroundSong);
+            return await PlayBackgroundMusic(_backgroundSong);
         }
 
-        public void PlaySound(string filename)
+        public async Task<bool> PlaySound(string filename)
         {
             // Music enabled?
-            if (!MusicOn) return;
+            if (!MusicOn) return false;
 
-            // Any existing background music?
-            if (_soundEffect != null)
-            {
-                //Stop and dispose of any background music
-                _soundEffect.Stop();
-                _soundEffect.Dispose();
-            }
+            var effect = await NewSound(filename, EffectsVolume);
+            _soundEffects.Add(effect);
 
-            // Initialize background music
-            // Open the resource
+            return true;
+        }
+
+        private async Task<MediaPlayer> NewSound(string filename, float defaultVolume, bool isLooping = false)
+        {
             var fd = Forms.Context.Assets.OpenFd(Path.Combine(SoundPath, filename));
 
-            _soundEffect = new MediaPlayer();
-            _soundEffect.SetVolume(EffectsVolume, EffectsVolume);
-            _soundEffect.Completion += delegate
-            {
-                _soundEffect.Dispose();
-                _soundEffect = null;
-            };
-            _soundEffect.Looping = false;
-            _soundEffect.SetDataSource(fd.FileDescriptor);
-            _soundEffect.Prepare();
-            _soundEffect.Start();
+            // Initialize sound
+            var soundEffect = new MediaPlayer();
+            soundEffect.SetVolume(defaultVolume, defaultVolume);
+            soundEffect.Completion += SoundEffectOnCompletion;
+
+            soundEffect.Looping = isLooping;
+            soundEffect.SetDataSource(fd.FileDescriptor);
+            soundEffect.Prepare();
+            soundEffect.Start();
+
+            return soundEffect;
         }
+
+        private void SoundEffectOnCompletion(object sender, EventArgs eventArgs)
+        {
+            var se = sender as MediaPlayer;
+
+            if (se != _backgroundMusic)
+                _soundEffects.Remove(se);
+
+            se?.Dispose();
+        }
+
+        #endregion
     }
 }

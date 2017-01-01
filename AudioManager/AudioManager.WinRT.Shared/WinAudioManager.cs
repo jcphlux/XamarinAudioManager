@@ -107,27 +107,23 @@ namespace AudioManager
         public void ActivateAudioSession()
         {
             // Initialize Audio
-            //var session = AVAudioSession.SharedInstance();
-            //session.SetCategory(AVAudioSessionCategory.Ambient);
-            //session.SetActive(true);
+            //todo
         }
 
         public void DeactivateAudioSession()
         {
-            //var session = AVAudioSession.SharedInstance();
-            //session.SetActive(false);
+            //todo
         }
 
         public void ReactivateAudioSession()
         {
-            //var session = AVAudioSession.SharedInstance();
-            //session.SetActive(true);
+            //todo
         }
 
         public async Task<bool> PlayBackgroundMusic(string filename)
         {
             // Music enabled?
-            if (!MusicOn) return false ;
+            if (!MusicOn) return false;
 
             // Any existing background music?
             //Stop and dispose of any background music
@@ -214,7 +210,6 @@ namespace AudioManager
             if (se != _backgroundMusic)
                 _soundEffects.Remove(se);
 
-            se = null;
         }
 
         #endregion
