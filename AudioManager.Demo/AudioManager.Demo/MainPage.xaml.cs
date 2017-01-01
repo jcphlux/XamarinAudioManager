@@ -41,5 +41,15 @@ namespace AudioManager.Demo
         {
             Audio.Manager.EffectsVolume = (float)e.NewValue;
         }
+
+        private async void Sound1_OnClicked(object sender, EventArgs e)
+        {
+            await Audio.Manager.PlaySound("Drop.mp3");
+        }
+
+        private async void Sound2_OnClicked(object sender, EventArgs e)
+        {
+            await Audio.Manager.PlaySound("DropTheBase.mp3");
+        }
     }
 }

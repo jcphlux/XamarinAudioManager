@@ -153,6 +153,12 @@
     <Content Include="..\SharedFiles\Audio\bgMusic.mp3">
       <Link>Sounds\bgMusic.mp3</Link>
     </Content>
+    <Content Include="..\SharedFiles\Audio\Drop.mp3">
+      <Link>Sounds\Drop.mp3</Link>
+    </Content>
+    <Content Include="..\SharedFiles\Audio\DropTheBase.mp3">
+      <Link>Sounds\DropTheBase.mp3</Link>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\..\packages\Xamarin.Forms.2.3.3.175\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets" Condition="Exists('..\..\packages\Xamarin.Forms.2.3.3.175\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets')" />

@@ -146,6 +146,14 @@
       <Link>Sounds\bgMusic.mp3</Link>
     </AndroidAsset>
   </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="..\SharedFiles\Audio\Drop.mp3">
+      <Link>Sounds\Drop.mp3</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\SharedFiles\Audio\DropTheBase.mp3">
+      <Link>Sounds\DropTheBase.mp3</Link>
+    </AndroidAsset>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

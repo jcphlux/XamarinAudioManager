@@ -212,7 +212,8 @@ namespace AudioManager.iOS
             if (se != _backgroundMusic)
                 _soundEffects.Remove(se);
 
-            se?.Dispose();
+            //todo: This casues an error
+            //se?.Dispose();
         }
 
         #endregion

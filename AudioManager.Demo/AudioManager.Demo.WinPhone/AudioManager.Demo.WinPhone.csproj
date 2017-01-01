@@ -99,6 +99,12 @@
     <Content Include="..\sharedfiles\audio\bgMusic.mp3">
       <Link>Sounds\bgMusic.mp3</Link>
     </Content>
+    <Content Include="..\SharedFiles\Audio\Drop.mp3">
+      <Link>Sounds\Drop.mp3</Link>
+    </Content>
+    <Content Include="..\SharedFiles\Audio\DropTheBase.mp3">
+      <Link>Sounds\DropTheBase.mp3</Link>
+    </Content>
     <Content Include="Assets\Logo.scale-240.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
