@@ -20,7 +20,7 @@ namespace AudioManager.Demo.WinPhone
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage
+    public sealed partial class MainPage : IAudioManagerContainer
     {
         public MainPage()
         {
@@ -29,6 +29,8 @@ namespace AudioManager.Demo.WinPhone
             this.NavigationCacheMode = NavigationCacheMode.Required;
 
             LoadApplication(new AudioManager.Demo.App());
+
+            AudioManagerContainer = this.Content as Canvas;
         }
 
         /// <summary>
@@ -46,5 +48,7 @@ namespace AudioManager.Demo.WinPhone
             // If you are using the NavigationHelper provided by some templates,
             // this event is handled for you.
         }
+
+        public Canvas AudioManagerContainer { get; set; }
     }
 }
