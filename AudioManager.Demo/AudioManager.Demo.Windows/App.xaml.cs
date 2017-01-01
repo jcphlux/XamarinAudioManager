@@ -33,6 +33,8 @@ namespace AudioManager.Demo.Windows
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+
+            Initializer.Initialize();
         }
 
         /// <summary>

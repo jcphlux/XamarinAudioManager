@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{95904BD7-4A06-46BD-9E1F-825AD456A880}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>AudioManager.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AssemblyName>AudioManager.iOS</AssemblyName>
@@ -87,7 +87,13 @@
     <CodesignKey>iPhone Distribution</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\AudioManager.WinRT.Shared\Initializer.cs">
+      <Link>Initializer.cs</Link>
+    </Compile>
     <Compile Include="AppleAudioManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

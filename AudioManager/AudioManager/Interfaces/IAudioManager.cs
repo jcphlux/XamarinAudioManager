@@ -1,4 +1,6 @@
-﻿namespace AudioManager.Interfaces
+﻿using Xamarin.Forms;
+
+namespace AudioManager.Interfaces
 {
     public interface IAudioManager
     {

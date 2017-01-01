@@ -5,10 +5,10 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4F519A6F-24F6-4C91-83AC-2EB7B4002F81}</ProjectGuid>
-    <OutputType>AppContainerExe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AudioManager.WinRT</RootNamespace>
-    <AssemblyName>AudioManager.WinRT.Windows</AssemblyName>
+    <RootNamespace>AudioManager.Win81</RootNamespace>
+    <AssemblyName>AudioManager.Win81</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>

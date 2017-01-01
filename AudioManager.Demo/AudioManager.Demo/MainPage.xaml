@@ -2,10 +2,35 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:AudioManager.Demo"
+             xmlns:win="clr-namespace:Windows.UI.Xaml.Controls;assembly=Windows, Version=255.255.255.255,
+            Culture=neutral, PublicKeyToken=null, ContentType=WindowsRuntime;targetPlatform=Windows"
              x:Class="AudioManager.Demo.MainPage">
+<Grid>
+  <Grid.RowDefinitions>
+    <RowDefinition Height="Auto"/>
+    <RowDefinition Height="Auto"/>
+    <RowDefinition Height="Auto"/>
+    <RowDefinition Height="Auto"/>
+    <RowDefinition Height="Auto"/>
+    <RowDefinition Height="Auto"/>
+  </Grid.RowDefinitions>
+  <Grid.ColumnDefinitions>
+    <ColumnDefinition Width="Auto"/>
+    <ColumnDefinition Width="Auto"/>
+  </Grid.ColumnDefinitions>
 
-  <Label Text="Welcome to Xamarin Forms!"
-           VerticalOptions="Center"
-           HorizontalOptions="Center" />
+  <Label Text="Background Music Enabled" Grid.Row="0" Grid.Column="0"/>
+  <Switch x:Name="EnableBackgroundMusic" Toggled="EnableBackgroundMusic_OnToggled" Grid.Row="1" Grid.Column="0"/>
+
+  <Label Text="Background Music Volume" Grid.Row="0" Grid.Column="1"/>
+  <Slider x:Name="BackGroundVolume" Minimum="0" Maximum="1" ValueChanged="BackGroundVolume_OnValueChanged" Grid.Row="1" Grid.Column="1"/>
+
+  <Label Text="Effects Enabled" Grid.Row="2" Grid.Column="0"/>
+  <Switch x:Name="EnableEffects" Toggled="EnableEffects_OnToggled" Grid.Row="3" Grid.Column="0"/>
+
+  <Label Text="Effects Volume" Grid.Row="2" Grid.Column="1"/>
+  <Slider x:Name="EffectsVolume" Minimum="0" Maximum="1" ValueChanged="EffectsVolume_OnValueChanged" Grid.Row="3" Grid.Column="1"/>
+  
+</Grid>
 
 </ContentPage>

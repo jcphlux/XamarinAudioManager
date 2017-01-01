@@ -35,6 +35,8 @@ namespace AudioManager.Demo.WinPhone
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+
+            Initializer.Initialize();
         }
 
         /// <summary>

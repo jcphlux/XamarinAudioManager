@@ -30,6 +30,8 @@ namespace AudioManager.Demo.UWP
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            Initializer.Initialize();
         }
 
         /// <summary>

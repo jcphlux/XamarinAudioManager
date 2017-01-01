@@ -9,6 +9,7 @@
     <Import_RootNamespace>AudioManager.WinRT</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Initializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WinRTAudioManager.cs" />
   </ItemGroup>
 </Project>

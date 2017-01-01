@@ -1,9 +1,10 @@
 using System.IO;
 using Android.Media;
+using AudioManager.Droid;
 using AudioManager.Interfaces;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(AudioManager.AudioManager))]
+[assembly: Dependency(typeof(DroidAudioManager))]
 namespace AudioManager.Droid
 {
     class DroidAudioManager : IAudioManager
@@ -27,7 +28,7 @@ namespace AudioManager.Droid
             }
             set
             {
-                _backgroundMusic.SetVolume(value,value);
+                _backgroundMusic.SetVolume(value, value);
                 _backgroundMusicVolume = value;
             }
         }
@@ -53,7 +54,7 @@ namespace AudioManager.Droid
 
         public void ActivateAudioSession()
         {
-           //todo
+            //todo
         }
 
         public void DeactivateAudioSession()
@@ -81,18 +82,15 @@ namespace AudioManager.Droid
 
             // Initialize background music
             // Open the resource
-            var fd = Forms.Context.Assets.OpenFd(filename);
+            var fd = Forms.Context.Assets.OpenFd($"{SoundPath}/{filename}");
 
             _backgroundMusic = new MediaPlayer();
             BackgroundMusicVolume = MusicVolume;
-            _backgroundMusic.Completion += delegate {
-                _backgroundMusic.Dispose(); 
-                _backgroundMusic = null;
-            };
             _backgroundMusic.Looping = true;
+
             _backgroundMusic.SetDataSource(fd.FileDescriptor);
             _backgroundMusic.Prepare();
-
+            _backgroundMusic.Start();
             _backgroundSong = filename;
         }
 
@@ -147,14 +145,16 @@ namespace AudioManager.Droid
             var fd = Forms.Context.Assets.OpenFd(Path.Combine(SoundPath, filename));
 
             _soundEffect = new MediaPlayer();
-            _soundEffect.SetVolume(EffectsVolume,EffectsVolume);
-            _soundEffect.Completion += delegate {
+            _soundEffect.SetVolume(EffectsVolume, EffectsVolume);
+            _soundEffect.Completion += delegate
+            {
                 _soundEffect.Dispose();
                 _soundEffect = null;
             };
             _soundEffect.Looping = false;
             _soundEffect.SetDataSource(fd.FileDescriptor);
             _soundEffect.Prepare();
+            _soundEffect.Start();
         }
     }
 }
