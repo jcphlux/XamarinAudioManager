@@ -143,15 +143,15 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="..\sharedfiles\audio\bgMusic.mp3">
-      <Link>Sounds\bgMusic.mp3</Link>
+      <Link>Assets\Sounds\bgMusic.mp3</Link>
     </AndroidAsset>
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="..\SharedFiles\Audio\Drop.mp3">
-      <Link>Sounds\Drop.mp3</Link>
+      <Link>Assets\Sounds\Drop.mp3</Link>
     </AndroidAsset>
     <AndroidAsset Include="..\SharedFiles\Audio\DropTheBase.mp3">
-      <Link>Sounds\DropTheBase.mp3</Link>
+      <Link>Assets\Sounds\DropTheBase.mp3</Link>
     </AndroidAsset>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

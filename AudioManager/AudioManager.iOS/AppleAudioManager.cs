@@ -20,6 +20,8 @@ namespace AudioManager.iOS
         private AVAudioPlayer _backgroundMusic;
         private string _backgroundSong = "";
 
+        //This is needed for iOS and Andriod because they do not await loading music
+        private bool _backgroundMusicLoading = false;
         private bool _musicOn = true;
         private bool _effectsOn = true;
         private float _backgroundMusicVolume = 0.5f;
@@ -55,7 +57,9 @@ namespace AudioManager.iOS
                 if (!MusicOn)
                     SuspendBackgroundMusic();
                 else
+#pragma warning disable 4014
                     RestartBackgroundMusic();
+#pragma warning restore 4014
 
             }
         }
@@ -123,7 +127,9 @@ namespace AudioManager.iOS
         public async Task<bool> PlayBackgroundMusic(string filename)
         {
             // Music enabled?
-            if (!MusicOn) return false;
+            if (!MusicOn || _backgroundMusicLoading) return false;
+
+            _backgroundMusicLoading = true;
 
             // Any existing background music?
             if (_backgroundMusic != null)
@@ -136,6 +142,8 @@ namespace AudioManager.iOS
 
             // Initialize background music
             _backgroundMusic = await NewSound(filename, BackgroundMusicVolume, true);
+
+            _backgroundMusicLoading = false;
 
             return true;
         }
@@ -185,7 +193,9 @@ namespace AudioManager.iOS
             return true;
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async Task<AVAudioPlayer> NewSound(string filename, float defaultVolume, bool isLooping = false)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
 
             var songUrl = new NSUrl(Path.Combine(SoundPath, filename));
