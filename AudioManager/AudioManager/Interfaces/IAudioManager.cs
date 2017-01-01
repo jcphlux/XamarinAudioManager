@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using System.Threading.Tasks;
+using Xamarin.Forms;
 
 namespace AudioManager.Interfaces
 {
@@ -9,8 +10,6 @@ namespace AudioManager.Interfaces
         float BackgroundMusicVolume { get; set; }
 
         bool MusicOn { get; set; }
-
-        float MusicVolume { get; set; }
 
         bool EffectsOn { get; set; }
 
@@ -29,15 +28,15 @@ namespace AudioManager.Interfaces
 
         void ReactivateAudioSession();
 
-        void PlayBackgroundMusic(string filename);
+        Task<bool> PlayBackgroundMusic(string filename);
 
         void StopBackgroundMusic();
 
         void SuspendBackgroundMusic();
 
-        void RestartBackgroundMusic();
+        Task<bool> RestartBackgroundMusic();
 
-        void PlaySound(string filename);
+        Task<bool> PlaySound(string filename);
 
         #endregion
     }

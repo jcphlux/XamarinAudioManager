@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace AudioManager.Demo
@@ -10,9 +11,9 @@ namespace AudioManager.Demo
             InitializeComponent();
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
-            Audio.Manager.PlayBackgroundMusic("bgMusic.mp3");
+            await Audio.Manager.PlayBackgroundMusic("bgMusic.mp3");
 
             EnableBackgroundMusic.IsToggled = Audio.Manager.MusicOn;
             BackGroundVolume.Value = Audio.Manager.BackgroundMusicVolume;

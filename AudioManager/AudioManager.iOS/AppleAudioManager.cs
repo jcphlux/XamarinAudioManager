@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using AudioManager.iOS;
 using AudioManager.Interfaces;
 using AVFoundation;
@@ -12,9 +16,16 @@ namespace AudioManager.iOS
     {
         #region Private Variables
 
+        private readonly List<AVAudioPlayer> _soundEffects = new List<AVAudioPlayer>();
+
         private AVAudioPlayer _backgroundMusic;
-        private AVAudioPlayer _soundEffect;
         private string _backgroundSong = "";
+
+        private bool _musicOn = true;
+        private bool _effectsOn = true;
+        private float _backgroundMusicVolume = 0.5f;
+        private float _effectsVolume = 1.0f;
+
 
         #endregion
 
@@ -22,15 +33,57 @@ namespace AudioManager.iOS
 
         public float BackgroundMusicVolume
         {
-            get { return _backgroundMusic.Volume; }
-            set { _backgroundMusic.Volume = value; }
+            get
+            {
+                return _backgroundMusicVolume;
+            }
+            set
+            {
+                _backgroundMusicVolume = value;
+
+                if (_backgroundMusic != null)
+                    _backgroundMusic.Volume = _backgroundMusicVolume;
+            }
         }
 
-        public bool MusicOn { get; set; } = true;
-        public float MusicVolume { get; set; } = 0.5f;
+        public bool MusicOn
+        {
+            get { return _musicOn; }
+            set
+            {
+                _musicOn = value;
 
-        public bool EffectsOn { get; set; } = true;
-        public float EffectsVolume { get; set; } = 1.0f;
+                if (!MusicOn)
+                    SuspendBackgroundMusic();
+                else
+                    RestartBackgroundMusic();
+
+            }
+        }
+
+        public bool EffectsOn
+        {
+            get { return _effectsOn; }
+            set
+            {
+                _effectsOn = value;
+
+                if (!EffectsOn && _soundEffects.Any())
+                    foreach (var s in _soundEffects) s.Stop();
+            }
+        }
+
+        public float EffectsVolume
+        {
+            get { return _effectsVolume; }
+            set
+            {
+                _effectsVolume = value;
+
+                if (_soundEffects.Any())
+                    foreach (var s in _soundEffects) s.Volume = _effectsVolume;
+            }
+        }
 
         public string SoundPath { get; set; } = "Sounds";
 
@@ -68,10 +121,10 @@ namespace AudioManager.iOS
             session.SetActive(true);
         }
 
-        public void PlayBackgroundMusic(string filename)
+        public async Task<bool> PlayBackgroundMusic(string filename)
         {
             // Music enabled?
-            if (!MusicOn) return;
+            if (!MusicOn) return false;
 
             // Any existing background music?
             if (_backgroundMusic != null)
@@ -80,20 +133,12 @@ namespace AudioManager.iOS
                 _backgroundMusic.Stop();
                 _backgroundMusic.Dispose();
             }
-
-            // Initialize background music
-            var songUrl = new NSUrl(Path.Combine(SoundPath, filename));
-            NSError err;
-            _backgroundMusic = new AVAudioPlayer(songUrl, "mp3", out err);
-            _backgroundMusic.Volume = MusicVolume;
-            _backgroundMusic.FinishedPlaying += delegate {
-                // backgroundMusic.Dispose(); 
-                _backgroundMusic = null;
-            };
-            _backgroundMusic.NumberOfLoops = -1;
-            _backgroundMusic.Play();
             _backgroundSong = filename;
 
+            // Initialize background music
+            _backgroundMusic = await NewSound(filename, BackgroundMusicVolume, true);
+
+            return true;
         }
 
         public void StopBackgroundMusic()
@@ -117,46 +162,60 @@ namespace AudioManager.iOS
             }
         }
 
-        public void RestartBackgroundMusic()
+        public async Task<bool> RestartBackgroundMusic()
         {
             // Music enabled?
-            if (!MusicOn) return;
+            if (!MusicOn) return false;
 
             // Was a song previously playing?
-            if (_backgroundSong == "") return;
+            if (_backgroundSong == "") return false;
 
             // Restart song to fix issue with wonky music after sleep
-            PlayBackgroundMusic(_backgroundSong);
+            return await PlayBackgroundMusic(_backgroundSong);
         }
 
-        public void PlaySound(string filename)
+        public async Task<bool> PlaySound(string filename)
         {
-            NSUrl songURL;
-
             // Music enabled?
-            if (!EffectsOn) return;
-
-            // Any existing sound effect?
-            if (_soundEffect != null)
-            {
-                //Stop and dispose of any sound effect
-                _soundEffect.Stop();
-                _soundEffect.Dispose();
-            }
+            if (!EffectsOn) return false;
 
             // Initialize sound
-            songURL = new NSUrl(Path.Combine(SoundPath, filename));
-            NSError err;
-            _soundEffect = new AVAudioPlayer(songURL, "mp3", out err);
-            _soundEffect.Volume = EffectsVolume;
-            _soundEffect.FinishedPlaying += delegate {
-                _soundEffect = null;
-            };
-            _soundEffect.NumberOfLoops = 0;
-            _soundEffect.Play();
+            var effect = await NewSound(filename, EffectsVolume);
+            _soundEffects.Add(effect);
 
+            return true;
+        }
+
+        private async Task<AVAudioPlayer> NewSound(string filename, float defaultVolume, bool isLooping = false)
+        {
+
+            var songUrl = new NSUrl(Path.Combine(SoundPath, filename));
+            NSError err;
+            var fileType = filename.Split('.').Last();
+            var sound = new AVAudioPlayer(songUrl, fileType, out err)
+            {
+                Volume = defaultVolume,
+                NumberOfLoops = isLooping ? -1 : 0
+            };
+
+            sound.FinishedPlaying += SoundOnFinishedPlaying;
+                
+
+            sound.Play();
+
+            return sound;
+        }
+
+        private void SoundOnFinishedPlaying(object sender, AVStatusEventArgs avStatusEventArgs)
+        {
+            var se = sender as AVAudioPlayer;
+
+            if (se != _backgroundMusic)
+                _soundEffects.Remove(se);
+
+            se?.Dispose();
         }
 
         #endregion
-    }
+        }
 }

@@ -15,13 +15,17 @@ using Windows.UI.Xaml.Navigation;
 
 namespace AudioManager.Demo.Windows
 {
-    public sealed partial class MainPage
+    public sealed partial class MainPage : IAudioManagerContainer
     {
         public MainPage()
         {
             this.InitializeComponent();
 
             LoadApplication(new AudioManager.Demo.App());
+
+            AudioManagerContainer = this.Content as Canvas;
         }
+
+        public Canvas AudioManagerContainer { get; set; }
     }
 }

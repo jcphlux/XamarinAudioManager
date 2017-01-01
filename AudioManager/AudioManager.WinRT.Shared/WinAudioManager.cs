@@ -1,26 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using AudioManager;
 using AudioManager.Interfaces;
-using AudioManager.UWP.Interfaces;
-using AudioManager.WinRT;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(WinRtAudioManager))]
-namespace AudioManager.WinRT
+[assembly: Dependency(typeof(WinAudioManager))]
+namespace AudioManager
 {
-    class WinRtAudioManager : IAudioManager
+    class WinAudioManager : IAudioManager
     {
         #region Private Variables
 
-        private Canvas _container;
+        private readonly Canvas _container;
+        private readonly List<MediaElement> _soundEffects = new List<MediaElement>();
 
         private MediaElement _backgroundMusic;
-        private MediaElement _soundEffect;
         private string _backgroundSong = "";
+
         private bool _musicOn = true;
         private bool _effectsOn = true;
+        private float _backgroundMusicVolume = 0.5f;
+        private float _effectsVolume = 1.0f;
 
         #endregion
 
@@ -28,15 +33,16 @@ namespace AudioManager.WinRT
 
         public float BackgroundMusicVolume
         {
-            get { return _backgroundMusic==null ? 
-                    MusicVolume :
-                    (float)_backgroundMusic.Volume; }
+            get
+            {
+                return _backgroundMusicVolume;
+            }
             set
             {
-                MusicVolume = value;
+                _backgroundMusicVolume = value;
 
                 if (_backgroundMusic != null)
-                    _backgroundMusic.Volume = value;
+                    _backgroundMusic.Volume = _backgroundMusicVolume;
             }
         }
 
@@ -54,6 +60,7 @@ namespace AudioManager.WinRT
 
             }
         }
+
         public bool EffectsOn
         {
             get { return _effectsOn; }
@@ -61,14 +68,22 @@ namespace AudioManager.WinRT
             {
                 _effectsOn = value;
 
-                if (!EffectsOn)
-                    _soundEffect?.Stop();
+                if (!EffectsOn && _soundEffects.Any())
+                    foreach (var s in _soundEffects) s.Stop();
             }
         }
 
-        public float MusicVolume { get; set; } = 0.5f;
+        public float EffectsVolume
+        {
+            get { return _effectsVolume; }
+            set
+            {
+                _effectsVolume = value;
 
-        public float EffectsVolume { get; set; } = 1.0f;
+                if (_soundEffects.Any())
+                    foreach (var s in _soundEffects) s.Volume = _effectsVolume;
+            }
+        }
 
         public string SoundPath { get; set; } = "Sounds";
 
@@ -76,7 +91,7 @@ namespace AudioManager.WinRT
 
         #region Constructors
 
-        public WinRtAudioManager()
+        public WinAudioManager()
         {
             var audioManagerContainer = ((Windows.UI.Xaml.Controls.Frame)Window.Current.Content).Content as IAudioManagerContainer;
             if (audioManagerContainer != null)
@@ -109,35 +124,26 @@ namespace AudioManager.WinRT
             //session.SetActive(true);
         }
 
-        public async void PlayBackgroundMusic(string filename)
+        public async Task<bool> PlayBackgroundMusic(string filename)
         {
             // Music enabled?
-            if (!MusicOn) return;
+            if (!MusicOn) return false ;
 
             // Any existing background music?
             //Stop and dispose of any background music
-            _backgroundMusic?.Stop();
-
-            StorageFolder folder = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFolderAsync("Sounds");
-            StorageFile file = await folder.GetFileAsync(filename);
-            var stream = await file.OpenAsync(FileAccessMode.Read);
-
-            // Initialize background music
-            _backgroundMusic = new MediaElement();
-            _backgroundMusic.Volume = MusicVolume;
-            _backgroundMusic.MediaEnded += delegate
+            if (_backgroundMusic != null)
             {
+                _backgroundMusic.Stop();
                 _container.Children.Remove(_backgroundMusic);
-                _backgroundMusic = null;
-            };
-            _backgroundMusic.IsLooping = true;
-            _backgroundMusic.AutoPlay = true;
-            _backgroundMusic.RealTimePlayback = true;
-            _container.Children.Add(_backgroundMusic);
-            _backgroundMusic.SetSource(stream, file.ContentType);
+            }
 
             _backgroundSong = filename;
 
+            // Initialize background music
+            _backgroundMusic = await NewSound(filename, BackgroundMusicVolume, true);
+            _container.Children.Add(_backgroundMusic);
+
+            return true;
         }
 
         public void StopBackgroundMusic()
@@ -153,41 +159,62 @@ namespace AudioManager.WinRT
             _backgroundMusic?.Pause();
         }
 
-        public void RestartBackgroundMusic()
+        public async Task<bool> RestartBackgroundMusic()
         {
             // Music enabled?
-            if (!MusicOn) return;
+            if (!MusicOn) return false;
 
             // Was a song previously playing?
-            if (_backgroundSong == "") return;
+            if (_backgroundSong == "") return false;
 
             // Restart song to fix issue with wonky music after sleep
-            PlayBackgroundMusic(_backgroundSong);
+            return await PlayBackgroundMusic(_backgroundSong);
         }
 
-        public async void PlaySound(string filename)
+        public async Task<bool> PlaySound(string filename)
         {
             // Music enabled?
-            if (!EffectsOn) return;
+            if (!EffectsOn) return false;
 
-            // Any existing sound effect?
-            //Stop and dispose of any sound effect
-            _soundEffect?.Stop();
+            var effect = await NewSound(filename, EffectsVolume);
+            _soundEffects.Add(effect);
+            _container.Children.Add(effect);
 
-            // Initialize sound
-            _soundEffect = new MediaElement();
-            _soundEffect.Volume = MusicVolume;
-            _soundEffect.MediaEnded += delegate
-            {
-                _container.Children.Remove(_soundEffect);
-                _soundEffect = null;
-            };
-            _soundEffect.IsLooping = false;
-            _soundEffect.AutoPlay = true;
+            return true;
+        }
+
+        private async Task<MediaElement> NewSound(string filename, float defaultVolume, bool isLooping = false)
+        {
             StorageFolder folder = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFolderAsync(SoundPath);
             StorageFile file = await folder.GetFileAsync(filename);
             var stream = await file.OpenAsync(FileAccessMode.Read);
-            _soundEffect.SetSource(stream, file.ContentType);
+
+            // Initialize sound
+            var sound = new MediaElement
+            {
+                Volume = defaultVolume,
+                IsLooping = isLooping,
+                AutoPlay = true,
+                Visibility = Visibility.Collapsed
+            };
+
+            sound.MediaEnded += SoundOnMediaEnded;
+
+            sound.SetSource(stream, file.ContentType);
+
+            return sound;
+        }
+
+        private void SoundOnMediaEnded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            var se = sender as MediaElement;
+
+            _container.Children.Remove(se);
+
+            if (se != _backgroundMusic)
+                _soundEffects.Remove(se);
+
+            se = null;
         }
 
         #endregion

@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Initializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)WinRTAudioManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IAudioManagerContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinAudioManager.cs" />
   </ItemGroup>
 </Project>

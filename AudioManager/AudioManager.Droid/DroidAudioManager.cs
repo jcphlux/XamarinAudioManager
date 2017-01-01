@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 using Android.Media;
 using AudioManager.Droid;
 using AudioManager.Interfaces;
@@ -115,7 +116,7 @@ namespace AudioManager.Droid
             }
         }
 
-        public void RestartBackgroundMusic()
+        public Task RestartBackgroundMusic()
         {
             // Music enabled?
             if (!MusicOn) return;

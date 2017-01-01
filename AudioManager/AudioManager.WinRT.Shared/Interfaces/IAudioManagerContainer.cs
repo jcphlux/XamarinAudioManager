@@ -1,6 +1,6 @@
 ﻿using Windows.UI.Xaml.Controls;
 
-namespace AudioManager.UWP.Interfaces
+namespace AudioManager
 {
     public interface IAudioManagerContainer
     {
