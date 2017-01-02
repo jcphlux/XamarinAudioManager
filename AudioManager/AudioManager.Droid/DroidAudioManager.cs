@@ -80,7 +80,7 @@ namespace AudioManager.Droid
 
             _soundPool = new SoundPool.Builder()
                 .SetAudioAttributes(attributes)
-                .SetMaxStreams(6)
+                .SetMaxStreams(10)
                 .Build();
 
             //6, Stream.Music, 0
@@ -153,7 +153,7 @@ namespace AudioManager.Droid
         public async Task<bool> RestartBackgroundMusic()
         {
             // Music enabled?
-            if (!MusicOn) return false;
+            if (!EffectsOn) return false;
 
             // Was a song previously playing?
             if (_backgroundSong == "") return false;
