@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Android.Media;
 using AudioManager.Droid;
@@ -14,7 +16,7 @@ namespace AudioManager.Droid
         #region Private Variables
 
         private readonly Dictionary<string, int> _sounds = new Dictionary<string, int>();
-       
+
         private readonly SoundPool _soundPool;
 
         private MediaPlayer _backgroundMusic;
@@ -80,9 +82,9 @@ namespace AudioManager.Droid
                 .SetAudioAttributes(attributes)
                 .SetMaxStreams(6)
                 .Build();
-            
+
             //6, Stream.Music, 0
-            
+
 
             // Initialize
             ActivateAudioSession();
@@ -175,7 +177,7 @@ namespace AudioManager.Droid
         {
             if (!_sounds.ContainsKey(filename))
             {
-                var file = Forms.Context.Assets.OpenFd(Path.Combine(SoundPath,filename));
+                var file = Forms.Context.Assets.OpenFd(Path.Combine(SoundPath, filename));
                 var soundId = await _soundPool.LoadAsync(file, priority);
                 if (soundId == 0)
                     return 0;
