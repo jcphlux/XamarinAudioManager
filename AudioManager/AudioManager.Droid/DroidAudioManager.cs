@@ -15,15 +15,18 @@ namespace AudioManager.Droid
     {
         #region Private Variables
 
-        private readonly List<MediaPlayer> _soundEffects = new List<MediaPlayer>();
+        private readonly Dictionary<string, int> _sounds = new Dictionary<string, int>();
+
+        private readonly SoundPool _soundPool;
 
         private MediaPlayer _backgroundMusic;
         private string _backgroundSong = "";
 
+        //This is needed for iOS and Andriod because they do not await loading music
+        private bool _backgroundMusicLoading;
+
         private bool _musicOn = true;
-        private bool _effectsOn = true;
         private float _backgroundMusicVolume = 0.5f;
-        private float _effectsVolume = 1.0f;
 
         #endregion
 
@@ -39,11 +42,10 @@ namespace AudioManager.Droid
             {
                 _backgroundMusicVolume = value;
 
-                if (_backgroundMusic != null)
-                    _backgroundMusic.SetVolume(_backgroundMusicVolume, _backgroundMusicVolume); 
+                _backgroundMusic?.SetVolume(_backgroundMusicVolume, _backgroundMusicVolume);
             }
         }
-        
+
         public bool MusicOn
         {
             get { return _musicOn; }
@@ -54,33 +56,15 @@ namespace AudioManager.Droid
                 if (!MusicOn)
                     SuspendBackgroundMusic();
                 else
+#pragma warning disable 4014
                     RestartBackgroundMusic();
+#pragma warning restore 4014
 
             }
         }
-        public bool EffectsOn
-        {
-            get { return _effectsOn; }
-            set
-            {
-                _effectsOn = value;
+        public bool EffectsOn { get; set; } = true;
 
-                if (!EffectsOn && _soundEffects.Any())
-                    foreach (var s in _soundEffects) s.Stop();
-            }
-        }
-
-        public float EffectsVolume
-        {
-            get { return _effectsVolume; }
-            set
-            {
-                _effectsVolume = value;
-
-                if (_soundEffects.Any())
-                    foreach (var s in _soundEffects) s.SetVolume(_effectsVolume, _effectsVolume);
-            }
-        }
+        public float EffectsVolume { get; set; } = 1.0f;
 
         public string SoundPath { get; set; } = "Sounds";
         #endregion
@@ -89,6 +73,19 @@ namespace AudioManager.Droid
 
         public DroidAudioManager()
         {
+            var attributes = new AudioAttributes.Builder()
+                .SetUsage(AudioUsageKind.Game)
+                .SetContentType(AudioContentType.Music)
+                .Build();
+
+            _soundPool = new SoundPool.Builder()
+                .SetAudioAttributes(attributes)
+                .SetMaxStreams(10)
+                .Build();
+
+            //6, Stream.Music, 0
+
+
             // Initialize
             ActivateAudioSession();
         }
@@ -104,60 +101,59 @@ namespace AudioManager.Droid
 
         public void DeactivateAudioSession()
         {
-            //todo
+            _soundPool.AutoPause();
+            _backgroundMusic.Pause();
         }
 
         public void ReactivateAudioSession()
         {
-            //todo
+            _soundPool.AutoResume();
+            RestartBackgroundMusic();
         }
 
         public async Task<bool> PlayBackgroundMusic(string filename)
         {
             // Music enabled?
-            if (!MusicOn) return false;
+            if (!MusicOn || _backgroundMusicLoading) return false;
+
+            _backgroundMusicLoading = true;
 
             // Any existing background music?
-            if (_backgroundMusic != null)
-            {
-                //Stop and dispose of any background music
-                _backgroundMusic.Stop();
-                _backgroundMusic.Dispose();
-            }
+            _backgroundMusic?.Stop();
 
             _backgroundSong = filename;
 
             // Initialize background music
-            _backgroundMusic = await NewSound(filename, BackgroundMusicVolume, true);
+            var afd = Forms.Context.Assets.OpenFd(Path.Combine(SoundPath, filename));
+            _backgroundMusic = new MediaPlayer();
+            _backgroundMusic.SetVolume(BackgroundMusicVolume, BackgroundMusicVolume);
+            _backgroundMusic.Looping = true;
+            _backgroundMusic.SetDataSource(afd.FileDescriptor, afd.StartOffset, afd.Length);
+            _backgroundMusic.Prepare();
+            _backgroundMusic.Start();
 
-            return true;
+            _backgroundMusicLoading = false;
+
+            return _backgroundMusic != null;
         }
 
         public void StopBackgroundMusic()
         {
             // If any background music is playing, stop it
             _backgroundSong = "";
-            if (_backgroundMusic != null)
-            {
-                _backgroundMusic.Stop();
-                _backgroundMusic.Dispose();
-            }
+            _backgroundMusic?.Stop();
         }
 
         public void SuspendBackgroundMusic()
         {
             // If any background music is playing, stop it
-            if (_backgroundMusic != null)
-            {
-                _backgroundMusic.Stop();
-                _backgroundMusic.Dispose();
-            }
+            _backgroundMusic?.Stop();
         }
 
         public async Task<bool> RestartBackgroundMusic()
         {
             // Music enabled?
-            if (!MusicOn) return false; 
+            if (!EffectsOn) return false;
 
             // Was a song previously playing?
             if (_backgroundSong == "") return false;
@@ -171,37 +167,25 @@ namespace AudioManager.Droid
             // Music enabled?
             if (!MusicOn) return false;
 
-            var effect = await NewSound(filename, EffectsVolume);
-            _soundEffects.Add(effect);
+            var effectId = await NewSound(filename, EffectsVolume);
+            //_soundEffects.Add(effectId);
 
-            return true;
+            return effectId != 0;
         }
 
-        private async Task<MediaPlayer> NewSound(string filename, float defaultVolume, bool isLooping = false)
+        private async Task<int> NewSound(string filename, float defaultVolume, int priority = 0, bool isLooping = false)
         {
-            var fd = Forms.Context.Assets.OpenFd(Path.Combine(SoundPath, filename));
+            if (!_sounds.ContainsKey(filename))
+            {
+                var file = Forms.Context.Assets.OpenFd(Path.Combine(SoundPath, filename));
+                var soundId = await _soundPool.LoadAsync(file, priority);
+                if (soundId == 0)
+                    return 0;
+                _sounds.Add(filename, soundId);
+            }
 
-            // Initialize sound
-            var soundEffect = new MediaPlayer();
-            soundEffect.SetVolume(defaultVolume, defaultVolume);
-            soundEffect.Completion += SoundEffectOnCompletion;
+            return _soundPool.Play(_sounds[filename], defaultVolume, defaultVolume, priority, isLooping ? -1 : 0, 1f);
 
-            soundEffect.Looping = isLooping;
-            soundEffect.SetDataSource(fd.FileDescriptor);
-            soundEffect.Prepare();
-            soundEffect.Start();
-
-            return soundEffect;
-        }
-
-        private void SoundEffectOnCompletion(object sender, EventArgs eventArgs)
-        {
-            var se = sender as MediaPlayer;
-
-            if (se != _backgroundMusic)
-                _soundEffects.Remove(se);
-
-            se?.Dispose();
         }
 
         #endregion
