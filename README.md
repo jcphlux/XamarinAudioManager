@@ -49,4 +49,4 @@ Xamarin Audio Manager follows the [Contributor Covenant](https://github.com/jcph
 
 ## License
 
-MIT © John Cutburth II
+[MIT](https://github.com/jcphlux/XamarinAudioManager/blob/master/LICENSE) © John Cutburth II
