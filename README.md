@@ -11,7 +11,7 @@ The Supported Xamarin Platforms are:
 - Android
 - UWP
 - Windows 8.1
-- Windows Phone 8.1
+- Windows Phone 8.1 //Sorta need work but how many people use win phone ;)
 
 Here is a sample showing how you can use Xamarin Audio Manager to set background music and play an effect sound.
 
