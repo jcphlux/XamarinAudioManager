@@ -94,8 +94,7 @@ namespace AudioManager
         public WinAudioManager()
         {
             var audioManagerContainer = ((Windows.UI.Xaml.Controls.Frame)Window.Current.Content).Content as IAudioManagerContainer;
-            if (audioManagerContainer != null)
-                _container = audioManagerContainer.AudioManagerContainer;
+            _container = audioManagerContainer != null ? audioManagerContainer.AudioManagerContainer : new Canvas();
             // Initialize
             ActivateAudioSession();
         }
