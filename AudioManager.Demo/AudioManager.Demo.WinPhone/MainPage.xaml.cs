@@ -1,6 +1,8 @@
 ﻿
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Xamarin.Forms;
+using NavigationEventArgs = Windows.UI.Xaml.Navigation.NavigationEventArgs;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -19,7 +21,7 @@ namespace AudioManager.Demo.WinPhone
 
             LoadApplication(new AudioManager.Demo.App());
 
-            AudioManagerContainer = this.Content as Canvas;
+            AudioManagerContainer = new Canvas();
 
         }
 
