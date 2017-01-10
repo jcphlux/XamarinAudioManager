@@ -95,8 +95,13 @@ public sealed partial class MainPage : IAudioManagerContainer
 
 #### Windows Phone 8.1 Install
 
+Windows Phone is problimatic. for now just modify the MainPage.xaml.cs like below. Audio will play but Volume and mute will not work.
+
 ```cs
-Initializer.Initialize();
+public sealed partial class MainPage : IAudioManagerContainer
+{
+    public Canvas AudioManagerContainer { get; set; } = new Canvas();
+
 ```
 
 ## Usage
