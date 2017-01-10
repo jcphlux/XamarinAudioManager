@@ -73,9 +73,9 @@ protected override void OnCreate(Bundle bundle)
 
 ```
 
-On Windows platforms we need to impliment an interface 'IAudioManagerContainer' in the MainPage.xaml.cs. We will use this interface to pass a ref to the base canvas. See example below.
-
 #### UWP & Windows 8.1 Install
+
+On Windows platforms we need to impliment an interface 'IAudioManagerContainer' in the MainPage.xaml.cs. We will use this interface to pass a ref to the base canvas. See example below.
 
 ```cs
 public sealed partial class MainPage : IAudioManagerContainer
