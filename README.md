@@ -73,16 +73,24 @@ protected override void OnCreate(Bundle bundle)
 
 ```
 
-#### UWP Install
+On Windows platforms we need to impliment an interface 'IAudioManagerContainer' in the MainPage.xaml.cs. We will use this interface to pass a ref to the base canvas. See example below.
+
+#### UWP & Windows 8.1 Install
 
 ```cs
-Initializer.Initialize();
-```
+public sealed partial class MainPage : IAudioManagerContainer
+{
+    public MainPage()
+    {
+        this.InitializeComponent();
 
-#### Windows 8.1 Install
+        LoadApplication(new XamarinAudioManagerTest.App());
 
-```cs
-Initializer.Initialize();
+        AudioManagerContainer = this.Content as Canvas;
+    }
+
+    public Canvas AudioManagerContainer { get; set; }
+}
 ```
 
 #### Windows Phone 8.1 Install
