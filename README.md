@@ -107,6 +107,23 @@ public sealed partial class MainPage : IAudioManagerContainer
 ## Usage
 
 ```cs
+//Play a mp3 on loop as the background music.
+ await Audio.Manager.PlayBackgroundMusic("bgMusic.mp3");
+ 
+ //Set or Get the state of the background music.
+ Audio.Manager.MusicOn = True;
+ 
+ //Set the volume level of the background music from 0 to 1.
+ Audio.Manager.BackgroundMusicVolume = 0.5;
+ 
+  //Set or Get the state of the Effect sounds.
+ Audio.Manager.EffectsOn = True;
+ 
+  //Set the volume level of the Effects from 0 to 1.
+ Audio.Manager.EffectsVolume = 0.5;
+ 
+ //Play an effect sound. On Android the lenth is limeted to 5 seconds.
+ await Audio.Manager.PlaySound("Drop.mp3"); 
 ```
 
 ## Contribute
