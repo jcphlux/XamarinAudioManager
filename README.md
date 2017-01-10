@@ -53,8 +53,22 @@ static void Main(string[] args)
 
 #### Android Install
 
-```
-Initializer.Initialize();
+Add **Initializer.Initialize();** to MainActivity.cs. See exaple below.
+
+```cs
+protected override void OnCreate(Bundle bundle)
+{
+    TabLayoutResource = Resource.Layout.Tabbar;
+    ToolbarResource = Resource.Layout.Toolbar;
+
+    base.OnCreate(bundle);
+
+    global::Xamarin.Forms.Forms.Init(this, bundle);
+    LoadApplication(new App());
+
+    Initializer.Initialize();
+}
+
 ```
 
 #### UWP Install
