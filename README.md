@@ -36,31 +36,40 @@ Install the [XamarinAudioManager NuGet Package](https://www.nuget.org/packages/X
 
 If you reference the package from a Xamarin Portable project, you will also need to reference the package from each Xamarin platform specific project. This is because the Xamarin Portable version of Xamarin Audio Manager doesn't contain the actual implementation of the audio APIs (because it differs from platform to platform), so referencing the package from a platform specific project will ensure that Xamarin Audio Manager is included in the app and used at runtime.
 
-> iOS Install
+#### iOS Install
+
+Add **Initializer.Initialize();** to Main.cs. See exaple below.
+
+```cs
+static void Main(string[] args)
+{
+    // if you want to use a different Application Delegate class from "AppDelegate"
+    // you can specify it here.
+    UIApplication.Main(args, null, "AppDelegate");
+
+    Initializer.Initialize();
+}
+```
+
+#### Android Install
 
 ```
 Initializer.Initialize();
 ```
 
-> Android Install
+#### UWP Install
 
 ```
 Initializer.Initialize();
 ```
 
-> UWP Install
+#### Windows 8.1 Install
 
 ```
 Initializer.Initialize();
 ```
 
-> Windows 8.1 Install
-
-```
-Initializer.Initialize();
-```
-
-> Windows Phone 8.1 Install
+#### Windows Phone 8.1 Install
 
 ```
 Initializer.Initialize();
