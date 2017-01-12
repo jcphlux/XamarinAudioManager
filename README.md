@@ -106,6 +106,8 @@ public sealed partial class MainPage : IAudioManagerContainer
 
 ## Usage
 
+Create a folder in each target platform to store the sounds files the default is 'Sounds' but if you want something diffent set 'Audio.Manager.SoundPath = [TargetFolderName]'. An alternitiz=ve is to add the files to a common shared folder and link to the sound files. [Click here for more info on file linking.](https://msdn.microsoft.com/en-us/library/9f4t9t92(v=vs.100).aspx#Anchor_0)
+
 ```cs
 //Play a mp3 on loop as the background music.
  await Audio.Manager.PlayBackgroundMusic("bgMusic.mp3");
