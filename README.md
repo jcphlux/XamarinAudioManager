@@ -36,7 +36,7 @@ Install the [XamarinAudioManager NuGet Package](https://www.nuget.org/packages/X
 
 If you reference the package from a Xamarin Portable project, you will also need to reference the package from each Xamarin platform specific project. This is because the Xamarin Portable version of Xamarin Audio Manager doesn't contain the actual implementation of the audio APIs (because it differs from platform to platform), so referencing the package from a platform specific project will ensure that Xamarin Audio Manager is included in the app and used at runtime.
 
-The target platforms need to initalize the AudioManager or the dll will be removed on compile. For iOS and Adndroind ths is done by calling a static class 'Initializer.Initialize();'. For Windows platforms you need to add a ref to the base canvas so the volume and mute fucntions will work so we are going to impliment an interface 'IAudioManagerContainer' to pass in that ref and initalize dll.
+The target platforms need to initalize the AudioManager or the dll will be removed on compile. For iOS and Adndroind ths is done by calling a static class `Initializer.Initialize();`. For Windows platforms you need to add a ref to the base canvas so the volume and mute fucntions will work so we are going to impliment an interface 'IAudioManagerContainer' to pass in that ref and initalize dll.
 
 #### iOS Install
 
@@ -106,7 +106,7 @@ public sealed partial class MainPage : IAudioManagerContainer
 
 ## Usage
 
-Create a folder in each target platform to store the sounds files the default is 'Sounds' but if you want something diffent set 'Audio.Manager.SoundPath = [TargetFolderName]'. An alternitiz=ve is to add the files to a common shared folder and link to the sound files. [Click here for more info on file linking.](https://msdn.microsoft.com/en-us/library/9f4t9t92(v=vs.100).aspx#Anchor_0)
+Create a folder in each target platform to store the sounds files the default is 'Sounds' but if you want something diffent set `Audio.Manager.SoundPath = [TargetFolderName]`. An alternitive is to add the files to a common shared folder and link to the sound files. [Click here for more info on file linking.](https://msdn.microsoft.com/en-us/library/9f4t9t92(v=vs.100).aspx#Anchor_0)
 
 ```cs
 //Play a mp3 on loop as the background music.
