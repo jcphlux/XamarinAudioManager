@@ -4,9 +4,9 @@
 
 ![banner](https://github.com/jcphlux/XamarinAudioManager/blob/master/Images/XamarinAudio_Small.png)
 
-> Cross platform Audio Manager for Xamarin
+> Cross platform Audio Manager for Xamarin Forms
 
-Xamarin Audio Manager provides a simple way to play audio files in Xamarin projects.
+Xamarin Audio Manager provides a simple way to play audio files in Xamarin Forms projects.
 
 The Supported Xamarin Platforms are:
 - iOS
