@@ -23,9 +23,14 @@ await Audio.Manager.PlayBackgroundMusic("bgMusic.mp3");
 await Audio.Manager.PlaySound("Drop.mp3");
 ```
 
-## Table of Contents
+## Table of Contents9
 
 - [Install](#install)
+  - [iOS](#ios)
+  - [Android](#android)
+  - [UWP](#uwp)
+  - [Windows81](#windows81)
+  - [WindowsPhone81](#windowsphone81)
 - [Usage](#usage)
 - [Contribute](#contribute)
 - [License](#license)
@@ -38,7 +43,7 @@ If you reference the package from a Xamarin Portable project, you will also need
 
 The target platforms need to initalize the AudioManager or the dll will be removed on compile. For iOS and Adndroind ths is done by calling a static class `Initializer.Initialize();`. For Windows platforms you need to add a ref to the base canvas so the volume and mute fucntions will work so we are going to impliment an interface 'IAudioManagerContainer' to pass in that ref and initalize dll.
 
-#### iOS Install
+#### iOS
 
 Add **Initializer.Initialize();** to Main.cs. See exaple below.
 
@@ -53,7 +58,7 @@ static void Main(string[] args)
 }
 ```
 
-#### Android Install
+#### Android
 
 Add **Initializer.Initialize();** to MainActivity.cs. See exaple below.
 
@@ -73,7 +78,9 @@ protected override void OnCreate(Bundle bundle)
 
 ```
 
-#### UWP & Windows 8.1 Install
+#### UWP
+
+#### Windows81
 
 On Windows platforms we need to impliment an interface 'IAudioManagerContainer' in the MainPage.xaml.cs. We will use this interface to pass a ref to the base canvas. See example below.
 
@@ -93,7 +100,7 @@ public sealed partial class MainPage : IAudioManagerContainer
 }
 ```
 
-#### Windows Phone 8.1 Install
+#### WindowsPhone81
 
 Windows Phone is problimatic. for now just modify the MainPage.xaml.cs like below. Audio will play but Volume and mute will not work.
 
