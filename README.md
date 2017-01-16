@@ -23,7 +23,7 @@ await Audio.Manager.PlayBackgroundMusic("bgMusic.mp3");
 await Audio.Manager.PlaySound("Drop.mp3");
 ```
 
-## Table of Contents9
+## Table of Contents
 
 - [Install](#install)
   - [iOS](#ios)
@@ -41,7 +41,7 @@ Install the [XamarinAudioManager NuGet Package](https://www.nuget.org/packages/X
 
 If you reference the package from a Xamarin Portable project, you will also need to reference the package from each Xamarin platform specific project. This is because the Xamarin Portable version of Xamarin Audio Manager doesn't contain the actual implementation of the audio APIs (because it differs from platform to platform), so referencing the package from a platform specific project will ensure that Xamarin Audio Manager is included in the app and used at runtime.
 
-The target platforms need to initalize the AudioManager or the dll will be removed on compile. For iOS and Adndroind ths is done by calling a static class `Initializer.Initialize();`. For Windows platforms you need to add a ref to the base canvas so the volume and mute fucntions will work so we are going to impliment an interface 'IAudioManagerContainer' to pass in that ref and initalize dll.
+The target platforms need to initalize the AudioManager or the dll will be removed on compile. For iOS and Adndroind ths is done by calling a static class `Initializer.Initialize();`. For Windows platforms you need to add a ref to the base canvas so the volume and mute fucntions will work so we are going to implement an interface 'IAudioManagerContainer' to pass in that ref and initalize dll.
 
 #### iOS
 
@@ -82,7 +82,7 @@ protected override void OnCreate(Bundle bundle)
 
 #### Windows81
 
-On Windows platforms we need to impliment an interface 'IAudioManagerContainer' in the MainPage.xaml.cs. We will use this interface to pass a ref to the base canvas. See example below.
+On Windows platforms we need to implement an interface 'IAudioManagerContainer' in the MainPage.xaml.cs. We will use this interface to pass a ref to the base canvas. See example below.
 
 ```cs
 public sealed partial class MainPage : IAudioManagerContainer
