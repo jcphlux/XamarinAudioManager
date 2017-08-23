@@ -7,6 +7,7 @@ using AudioManager.Interfaces;
 using AVFoundation;
 using Foundation;
 using Xamarin.Forms;
+using System.Threading;
 
 [assembly: Dependency(typeof(AppleAudioManager))]
 namespace AudioManager.iOS
