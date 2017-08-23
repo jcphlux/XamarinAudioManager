@@ -27,6 +27,7 @@ namespace AudioManager.Droid
 
         private bool _musicOn = true;
         private float _backgroundMusicVolume = 0.5f;
+        private long _isPlayingSound;
 
         #endregion
 
@@ -166,9 +167,15 @@ namespace AudioManager.Droid
         {
             // Music enabled?
             if (!MusicOn) return false;
+            
+            if (Interlocked.Read(ref _isPlayingSound) != 0) return false;
+
+            Interlocked.Increment(ref _isPlayingSound);
 
             var effectId = await NewSound(filename, EffectsVolume);
             //_soundEffects.Add(effectId);
+            
+            Interlocked.Decrement(ref _estoySonando);
 
             return effectId != 0;
         }
@@ -181,7 +188,7 @@ namespace AudioManager.Droid
                 var soundId = await _soundPool.LoadAsync(file, priority);
                 if (soundId == 0)
                     return 0;
-                _sounds.Add(filename, soundId);
+                _sounds.TryAdd(filename, soundId);
             }
 
             return _soundPool.Play(_sounds[filename], defaultVolume, defaultVolume, priority, isLooping ? -1 : 0, 1f);
