@@ -7,6 +7,7 @@ using Android.Media;
 using AudioManager.Droid;
 using AudioManager.Interfaces;
 using Xamarin.Forms;
+using System.Threading;
 
 [assembly: Dependency(typeof(DroidAudioManager))]
 namespace AudioManager.Droid
@@ -175,7 +176,7 @@ namespace AudioManager.Droid
             var effectId = await NewSound(filename, EffectsVolume);
             //_soundEffects.Add(effectId);
             
-            Interlocked.Decrement(ref _estoySonando);
+            Interlocked.Decrement(ref _isPlayingSound);
 
             return effectId != 0;
         }
