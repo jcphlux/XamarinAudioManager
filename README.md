@@ -8,6 +8,9 @@
 
 Xamarin Audio Manager provides a simple way to play audio files in Xamarin Forms projects.
 
+Note: I have not been developing for Xamarin lately and have been to busy to give any time this project.
+If some one wants to take it over let me know.
+
 The Supported Xamarin Platforms are:
 - iOS
 - Android
@@ -136,6 +139,8 @@ Create a folder in each target platform to store the sounds files the default is
 ```
 
 ## Contribute
+I have not been developing for Xamarin lately and have been to busy to give any time this project.
+If some one wants to take it over let me know.
 
 Feel free to help out! [Open an issue](https://github.com/jcphlux/XamarinAudioManager/issues/new) or submit PRs.
 
