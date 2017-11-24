@@ -7,6 +7,7 @@ using AudioManager.Interfaces;
 using AVFoundation;
 using Foundation;
 using Xamarin.Forms;
+using System.Threading;
 
 [assembly: Dependency(typeof(AppleAudioManager))]
 namespace AudioManager.iOS
@@ -26,7 +27,7 @@ namespace AudioManager.iOS
         private bool _effectsOn = true;
         private float _backgroundMusicVolume = 0.5f;
         private float _effectsVolume = 1.0f;
-
+        private long _isPlayingSound;
 
         #endregion
 
@@ -185,10 +186,16 @@ namespace AudioManager.iOS
         {
             // Music enabled?
             if (!EffectsOn) return false;
+            
+            if (Interlocked.Read(ref _isPlayingSound) != 0) return false;
+
+            Interlocked.Increment(ref _isPlayingSound);
 
             // Initialize sound
             var effect = await NewSound(filename, EffectsVolume);
             _soundEffects.Add(effect);
+            
+            Interlocked.Decrement(ref _isPlayingSound);
 
             return true;
         }
