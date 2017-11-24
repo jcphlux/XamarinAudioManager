@@ -73,15 +73,22 @@ namespace AudioManager.Droid
 
         public DroidAudioManager()
         {
-            var attributes = new AudioAttributes.Builder()
-                .SetUsage(AudioUsageKind.Game)
-                .SetContentType(AudioContentType.Music)
-                .Build();
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+            {
+                var attributes = new AudioAttributes.Builder()
+                    .SetUsage(AudioUsageKind.Game)
+                    .SetContentType(AudioContentType.Music)
+                    .Build();
 
-            _soundPool = new SoundPool.Builder()
-                .SetAudioAttributes(attributes)
-                .SetMaxStreams(10)
-                .Build();
+                _soundPool = new SoundPool.Builder()
+                    .SetAudioAttributes(attributes)
+                    .SetMaxStreams(10)
+                    .Build();
+            }
+            else
+            {
+                _soundPool = new SoundPool(10, Android.Media.Stream.Music, 0);
+            }
 
             //6, Stream.Music, 0
 
